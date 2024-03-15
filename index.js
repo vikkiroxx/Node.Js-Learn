@@ -1,23 +1,52 @@
-const mongoose = require('mongoose');
-const main = async ()=>{
-    await mongoose.connect("mongodb://localhost:27017/Node-Learn");
-    const ProductSchema = new mongoose.Schema({
-        name:String,
-        Brand:String,
-        DeviceWorth:Number
-    });
-    const ProductsModel = mongoose.model('products', ProductSchema);
-    let data = new ProductsModel({
-        name:"Manohar", 
-        Brand: "Oppo", 
-        DeviceWorth: 1500
-    });
-    let result = await data.save();
-    console.log(result)
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost:27017/Node-Learn");
+const ProductSchema = new mongoose.Schema({
+    name: String,
+    Brand: String,
+    DeviceWorth: Number,
+  });
+
+const saveInDB = async () => {
+  const ProductsModel = mongoose.model("products", ProductSchema);
+  let data = new ProductsModel({
+    name: "Manohar",
+    Brand: "Oppo",
+    DeviceWorth: 1500,
+  });
+  let result = await data.save();
+  console.log(result);
+};
+
+const updateInDB = async () => {
+  const Product = mongoose.model('products', ProductSchema);
+  let data = await Product.updateOne(
+    { _id: "65f42653fc3c904e9f66b2ed" },
+    {
+      $set: { DeviceWorth: 3000, name:"Mannulaal" },
+    }
+  )
+  console.log(data);
+};
+
+const deleteInDB = async ()=>{
+    const Product = mongoose.model('products', ProductSchema);
+    let data = await Product.deleteOne(
+        {_id: "65f42653fc3c904e9f66b2ed"}
+    );
+    console.log(data);
 }
 
-main()
+const findInDB = async ()=>{
+    const Product = mongoose.model('products', ProductSchema);
+    let data = await Product.find();
+    console.log(data);
+}
 
+const findByIdInDB = async ()=>{
+    const Product = mongoose.model('products', ProductSchema);
+    let data = await Product.find({_id:"65ec47e49d93290d40bf0aff"});
+    console.log(data);
+}
 
 // const dbConnect = require('./mongodb.js')
 
@@ -28,9 +57,6 @@ main()
 // }
 
 // main();
-
-
-
 
 // const {MongoClient} = require('mongodb');
 // const url =  'mongodb://localhost:27017';
@@ -52,7 +78,6 @@ main()
 // const app = express();
 // const route= express.Router();
 
-
 // // app.use(reqFilter);
 // route.use(reqFilter)
 // app.get('/', (res, resp) => {
@@ -73,4 +98,3 @@ main()
 // app.use('/',route);
 
 // app.listen(5000)
-
