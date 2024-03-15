@@ -1,12 +1,33 @@
-const dbConnect = require('./mongodb.js')
-
+const mongoose = require('mongoose');
 const main = async ()=>{
-    let data = await dbConnect();
-    data = await data.find().toArray();
-    console.log(data);
+    await mongoose.connect("mongodb://localhost:27017/Node-Learn");
+    const ProductSchema = new mongoose.Schema({
+        name:String,
+        Brand:String,
+        DeviceWorth:Number
+    });
+    const ProductsModel = mongoose.model('products', ProductSchema);
+    let data = new ProductsModel({
+        name:"Manohar", 
+        Brand: "Oppo", 
+        DeviceWorth: 1500
+    });
+    let result = await data.save();
+    console.log(result)
 }
 
-main();
+main()
+
+
+// const dbConnect = require('./mongodb.js')
+
+// const main = async ()=>{
+//     let data = await dbConnect();
+//     data = await data.find().toArray();
+//     console.log(data);
+// }
+
+// main();
 
 
 
