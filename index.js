@@ -1,100 +1,37 @@
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/Node-Learn");
-const ProductSchema = new mongoose.Schema({
-    name: String,
-    Brand: String,
-    DeviceWorth: Number,
-  });
+const express = require('express');
+require('./config');
+const Product = require('./product');
 
-const saveInDB = async () => {
-  const ProductsModel = mongoose.model("products", ProductSchema);
-  let data = new ProductsModel({
-    name: "Manohar",
-    Brand: "Oppo",
-    DeviceWorth: 1500,
-  });
+const app = express();
+
+app.use(express.json());
+app.post("/create", async (req, resp)=>{
+  let data = new Product(req.body);
   let result = await data.save();
   console.log(result);
-};
+  resp.send(result);
+});
 
-const updateInDB = async () => {
-  const Product = mongoose.model('products', ProductSchema);
+app.get("/list", async(req,resp)=>{
+  let data = await Product.find();
+  resp.send(data);
+});
+
+app.delete("/delete/:_id", async(req,resp)=>{
+  console.log(req.params)
+  let data = await Product.deleteOne(req.params);
+  resp.send(data);
+});
+
+app.put("/update/:_id", async(req, resp)=>{
+  console.log(req.params)
   let data = await Product.updateOne(
-    { _id: "65f42653fc3c904e9f66b2ed" },
+    req.params,
     {
-      $set: { DeviceWorth: 3000, name:"Mannulaal" },
+      $set: req.body
     }
-  )
-  console.log(data);
-};
+  );
+  resp.send(data);
+});
 
-const deleteInDB = async ()=>{
-    const Product = mongoose.model('products', ProductSchema);
-    let data = await Product.deleteOne(
-        {_id: "65f42653fc3c904e9f66b2ed"}
-    );
-    console.log(data);
-}
-
-const findInDB = async ()=>{
-    const Product = mongoose.model('products', ProductSchema);
-    let data = await Product.find();
-    console.log(data);
-}
-
-const findByIdInDB = async ()=>{
-    const Product = mongoose.model('products', ProductSchema);
-    let data = await Product.find({_id:"65ec47e49d93290d40bf0aff"});
-    console.log(data);
-}
-
-// const dbConnect = require('./mongodb.js')
-
-// const main = async ()=>{
-//     let data = await dbConnect();
-//     data = await data.find().toArray();
-//     console.log(data);
-// }
-
-// main();
-
-// const {MongoClient} = require('mongodb');
-// const url =  'mongodb://localhost:27017';
-// const client = new MongoClient(url);
-// const database = 'Node-Learn';
-
-// async function getData(){
-//     let result = await client.connect();
-//     let db = result.db(database);
-//     let collection = db.collection('products');
-//     let response = await collection.find({}).toArray();
-//     console.log(response);
-// }
-
-// getData();
-
-// const express = require('express');
-// const reqFilter= require('./middleware');
-// const app = express();
-// const route= express.Router();
-
-// // app.use(reqFilter);
-// route.use(reqFilter)
-// app.get('/', (res, resp) => {
-//     resp.send('Welcome to Home page')
-// });
-
-// app.get('/users', (res, resp) => {
-//     resp.send('Welcome to Users page')
-// });
-
-// route.get('/about', (res, resp) => {
-//     resp.send('Welcome to About page')
-// });
-// route.get('/contact', (res, resp) => {
-//     resp.send('Welcome to contact page')
-// });
-
-// app.use('/',route);
-
-// app.listen(5000)
+app.listen(5000);
